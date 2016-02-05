@@ -12,43 +12,35 @@ def extract_keypoints(octave, threshold):
     (width, height) = octave[0].shape
     for img in octave:
         res = [[0 for i in range(width)] for j in range(height)]
-        for x in range(width):
-            for y in range(height):
+        for x in range(1, width-1):
+            for y in range(1, height-1):
                 check_pos = []
                 x_min = x - 1
                 x_max = x + 1
                 y_min = y - 1
                 y_max = y + 1
-                if x == 0:
-                    x_min = 0
-                elif x == width-1:
-                    x_max = x
-                if y == 0:
-                    y_min = 0
-                elif y == height-1:
-                    y_max = y
-                min_val = 0
-                max_val = 255
+                values = []
                 for xx in range(x_min, x_max):
                     for yy in range(y_min, y_max):
-                        if min_val < img[xx][yy]:
-                            min_val = img[xx][yy]
-                        if max_val > img[xx][yy]:
-                            max_val = img[xx][yy]
-                res[x][y] = 0
+                        values.append(img[xx][yy])
+                max_val = max(values)
+                min_val = min(values)
+                val = img[x][y]
                 #print(max_val - min_val)
-                if (abs(max_val - min_val) > threshold and
-                    (min_val == img[x][y] or
-                     max_val == img[x][y])):
-                    res[x][y] = 1
+                if ((max_val - min_val) > threshold and
+                    (min_val == val or max_val == val)):
+                    res[x][y] = True
+                else:
+                    res[x][y] = False
+                    
         minmax_list.append(res)
     # octave間の判定
     for i in range(1, len(minmax_list)-2):
         for x in range(width):
             for y in range(height):
-                if (minmax_list[i-1][x][y] == 1 and
-                    minmax_list[i  ][x][y] == 1 and
-                    minmax_list[i+1][x][y] == 1):
+                if (minmax_list[i-1][x][y] and
+                    minmax_list[i  ][x][y] and
+                    minmax_list[i+1][x][y]):
                     keypoints.append([x, y])
     print('point num = %d' % len(keypoints))
     return keypoints
@@ -79,7 +71,7 @@ if __name__ == '__main__':
             for p in layer:
                 m = np.power(2, n)
                 fig.gca().add_artist(plt.Circle((p[1]*m, p[0]*m), r, color='r', fill=False))
-        r += 5
+        #r += 5
 
     plt.show()
 
