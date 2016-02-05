@@ -11,7 +11,8 @@ def extract_keypoints(octave, threshold):
     # 各イメージの最大値、最小値の判定
     (width, height) = octave[0].shape
     for img in octave:
-        res = [[0 for i in range(width)] for j in range(height)]
+        #res = [[0 for i in range(width)] for j in range(height)]
+        s = set()
         for x in range(1, width-1):
             for y in range(1, height-1):
                 check_pos = []
@@ -29,18 +30,20 @@ def extract_keypoints(octave, threshold):
                 #print(max_val - min_val)
                 if ((max_val - min_val) > threshold and
                     (min_val == val or max_val == val)):
-                    res[x][y] = True
+                    s.add((x, y))
+                """
                 else:
                     res[x][y] = False
+                """
                     
-        minmax_list.append(res)
+        minmax_list.append(s)
     # octave間の判定
     for i in range(1, len(minmax_list)-2):
         for x in range(width):
             for y in range(height):
-                if (minmax_list[i-1][x][y] and
-                    minmax_list[i  ][x][y] and
-                    minmax_list[i+1][x][y]):
+                if ((x, y) in minmax_list[i-1] and
+                    (x, y) in minmax_list[i  ] and
+                    (x, y) in minmax_list[i+1]):
                     keypoints.append([x, y])
     print('point num = %d' % len(keypoints))
     return keypoints
