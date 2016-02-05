@@ -77,8 +77,8 @@ if __name__ == '__main__':
     for n, octave in enumerate(keypoint_space):
         for l, layer in enumerate(octave):
             for p in layer:
-                p *= np.power(2, n)
-                fig.gca().add_artist(plt.Circle((p[1], p[0]), r, color='r', fill=False))
+                m = np.power(2, n)
+                fig.gca().add_artist(plt.Circle((p[1]*m, p[0]*m), r, color='r', fill=False))
         r += 5
 
     plt.show()
